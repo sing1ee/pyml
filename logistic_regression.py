@@ -15,9 +15,7 @@ def feature_normalize(X):
     m = len(X)
     feature_num = len(X[0])
     column_mean = [sum([float(X[j][i]) for j in xrange(m)]) / m for i in xrange(feature_num)]
-    print column_mean
     column_std = [sqrt(sum([float(X[j][i]) ** 2 for j in xrange(m)]) / m)  for i in xrange(feature_num)]
-    print column_std
     return [[(float(X[i][j]) - column_mean[j]) / column_std[j] for j in xrange(feature_num)] for i in xrange(m)]
 
 def sigmoid_function(x):
@@ -48,17 +46,21 @@ def gradient_decent(X, y, theta, alpha, num_of_iters):
     return theta
 
 def predict(test_data_path, theta, delimiter=','):
-    X = [[1] + line.strip().split(delimiter)[:-1] for line in open(test_data_path)]
+    X = [line.strip().split(delimiter)[:-1] for line in open(test_data_path)]
     y = [int(line.strip().split(delimiter)[-1]) for line in open(test_data_path)]
     X = feature_normalize(X)
+    X = [[1] + X[i] for i in xrange(len(y))]
     idx = 0
+    ok = 0
     for x in X:    
         h = sigmoid_function(sum([x[i] * theta[i] for i in xrange(len(x))]))
         r = 0
         if h >= 0.5:
             r = 1
         print r, y[idx]
+        if r == y[idx]: ok += 1
         idx += 1
+    print ok / 20.0
 
 X, y = load_data('train.data')
 
@@ -73,7 +75,7 @@ print X
 
 theta = [1 for i in xrange(feature_num + 1)]
 alpha = 0.1
-num_of_iters = 600
+num_of_iters = 700
 
 theta = gradient_decent(X, y, theta, alpha, num_of_iters)
 
