@@ -47,14 +47,20 @@ def gradient_decent(X, y, theta, alpha, num_of_iters):
         print cost_function(X, y, theta)
     return theta
 
-def predict(x, theta):
-    h = sigmoid_function(sum([x[i] * theta[i] for i in xrange(len(x))]))
-    if h >= 0.5:
-        return True
-    return False
+def predict(test_data_path, theta, delimiter=','):
+    X = [[1] + line.strip().split(delimiter)[:-1] for line in open(test_data_path)]
+    y = [int(line.strip().split(delimiter)[-1]) for line in open(test_data_path)]
+    X = feature_normalize(X)
+    idx = 0
+    for x in X:    
+        h = sigmoid_function(sum([x[i] * theta[i] for i in xrange(len(x))]))
+        r = 0
+        if h >= 0.5:
+            r = 1
+        print r, y[idx]
+        idx += 1
 
-#print load_data('test.data')
-X, y = load_data('test.data')
+X, y = load_data('train.data')
 
 X = feature_normalize(X)
 
@@ -67,7 +73,8 @@ print X
 
 theta = [1 for i in xrange(feature_num + 1)]
 alpha = 0.1
-num_of_iters = 1000
+num_of_iters = 600
 
-print gradient_decent(X, y, theta, alpha, num_of_iters)
+theta = gradient_decent(X, y, theta, alpha, num_of_iters)
 
+predict('test.data', theta)
